@@ -1,0 +1,13 @@
+{
+  "name": "daily-bot",
+  "version": "1.0.0",
+  "description": "每日自动化推送：道德经、AI新闻、英语单词，通过飞书Bot发送",
+  "scripts": {
+    "english": "node scripts/english.js",
+    "daodejing": "node scripts/daodejing.js",
+    "ai-news": "node scripts/ai_news.js"
+  },
+  "dependencies": {
+    "axios": "^1.7.0"
+  }
+}

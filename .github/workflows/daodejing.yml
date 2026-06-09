@@ -1,0 +1,27 @@
+name: 每日道德经
+
+on:
+  schedule:
+    - cron: '0 4 * * *'  # UTC 4:00 = 北京时间 12:00
+  workflow_dispatch:
+
+jobs:
+  push-daodejing:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: 推送道德经
+        env:
+          FEISHU_APP_ID: ${{ secrets.FEISHU_APP_ID }}
+          FEISHU_APP_SECRET: ${{ secrets.FEISHU_APP_SECRET }}
+          FEISHU_USER_ID: ${{ secrets.FEISHU_USER_ID }}
+        run: npm run daodejing

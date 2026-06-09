@@ -1,0 +1,27 @@
+name: 每日英语单词
+
+on:
+  schedule:
+    - cron: '30 0 * * *'  # UTC 0:30 = 北京时间 8:30
+  workflow_dispatch:  # 支持手动触发
+
+jobs:
+  push-english-words:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: 推送英语单词
+        env:
+          FEISHU_APP_ID: ${{ secrets.FEISHU_APP_ID }}
+          FEISHU_APP_SECRET: ${{ secrets.FEISHU_APP_SECRET }}
+          FEISHU_USER_ID: ${{ secrets.FEISHU_USER_ID }}
+        run: npm run english
