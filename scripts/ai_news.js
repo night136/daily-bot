@@ -6,6 +6,7 @@
 
 const axios = require('axios');
 const { sendMarkdown } = require('./send_feishu');
+const { sendMarkdown: sendWecom } = require('./send_wecom');
 
 /**
  * 通过 GitHub 搜索 API 获取 AI 相关 trending 内容
@@ -87,6 +88,7 @@ async function main() {
 
   console.log(`推送 ${picked.length} 条新闻`);
   await sendMarkdown(title, content);
+  await sendWecom(`# 📰 每日 AI 新闻推送 | ${dateStr}\n${content}`);
   console.log('推送成功！');
 }
 

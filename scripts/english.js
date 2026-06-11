@@ -4,6 +4,7 @@
  */
 
 const { sendMarkdown } = require('./send_feishu');
+const { sendMarkdown: sendWecom } = require('./send_wecom');
 const words = require('../data/words.json');
 
 function shuffle(arr) {
@@ -30,6 +31,7 @@ async function main() {
 
   console.log(`推送英语单词: ${dateStr}`);
   await sendMarkdown(title, content);
+  await sendWecom(`# 📝 每日 5 个英语单词 | ${dateStr}\n${content}`);
   console.log('推送成功！');
 }
 
