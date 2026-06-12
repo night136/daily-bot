@@ -5,7 +5,7 @@
  */
 
 const { sendMarkdown } = require('./send_feishu');
-const { sendNews: sendWecom } = require('./send_wecom');
+const { sendText: sendWecom } = require('./send_wecom');
 const chapters = require('../data/daodejing.json');
 
 async function main() {
@@ -58,9 +58,11 @@ async function main() {
   await sendMarkdown(title, body);
   console.log(`道德经第${ch1.chapter}-${ch2.chapter}章推送完成`);
 
-  // 企微版：图文卡片，内容与飞书一致（含感悟）
-  const wecomDesc = [
-    `📜 第${ch1.chapter}章 · ${ch1.title}`,
+  // 企微版：text文本，内容与飞书一致（含感悟），不截断
+  const wecomText = [
+    title,
+    ``,
+    `第${ch1.chapter}章 · ${ch1.title}`,
     ``,
     `【原文】`,
     ch1.content,
@@ -72,7 +74,7 @@ async function main() {
     ch1.reflection,
     ...(ch2 ? [
       ``,
-      `📜 第${ch2.chapter}章 · ${ch2.title}`,
+      `第${ch2.chapter}章 · ${ch2.title}`,
       ``,
       `【原文】`,
       ch2.content,
@@ -86,7 +88,7 @@ async function main() {
     ``,
     `📌 明日预告：${preview}`,
   ].join('\n');
-  await sendWecom(title, wecomDesc);
+  await sendWecom(wecomText);
 }
 
 main().catch(err => { console.error(err); process.exit(1); });

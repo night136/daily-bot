@@ -3,7 +3,8 @@
  * 通过群机器人 Webhook 发送消息到企业微信群
  *
  * 支持的消息类型：
- * - news 图文卡片（推荐，美观）
+ * - text 文本（推荐，微信/企微都兼容，不截断）
+ * - news 图文卡片
  * - markdown 文本（兼容旧调用）
  *
  * 需要的环境变量（在 GitHub Secrets 中设置）：
@@ -26,6 +27,37 @@ const WEBHOOKS = [
   process.env.WECOM_WEBHOOK,
   process.env.WECOM_WEBHOOK_2,
 ].filter(Boolean);
+
+/**
+ * 发送 text 文本消息到企业微信群（推荐）
+ * 微信和企微都兼容，内容不截断
+ * @param {string} content - 文本内容
+ */
+async function sendText(content) {
+  if (WEBHOOKS.length === 0) {
+    console.log("[企微] 未配置任何 WECOM_WEBHOOK，跳过");
+    return;
+  }
+
+  for (const webhook of WEBHOOKS) {
+    try {
+      const resp = await axios.post(webhook, {
+        msgtype: 'text',
+        text: { content },
+      }, {
+        headers: { 'Content-Type': 'application/json' },
+      });
+
+      if (resp.data.errcode !== 0) {
+        console.error(`[企微] text发送失败: ${JSON.stringify(resp.data)}`);
+      } else {
+        console.log(`[企微] text消息发送成功 (webhook=${webhook.slice(0, 50)}...)`);
+      }
+    } catch (err) {
+      console.error(`[企微] text发送异常: ${err.message}`);
+    }
+  }
+}
 
 /**
  * 发送 markdown 消息到企业微信群（兼容旧调用）
@@ -58,9 +90,9 @@ async function sendMarkdown(content) {
 }
 
 /**
- * 发送图文卡片消息到企业微信群（推荐，美观）
+ * 发送图文卡片消息到企业微信群
  * @param {string} title - 卡片标题
- * @param {string} description - 卡片描述内容（支持换行）
+ * @param {string} description - 卡片描述内容
  * @param {string} [url=''] - 点击跳转链接
  * @param {string} [picurl=''] - 封面图片URL
  */
@@ -70,7 +102,6 @@ async function sendNews(title, description, url = '', picurl = '') {
     return;
   }
 
-  // 企业微信 news 类型 url 不能为空，未提供时用占位链接
   const articleUrl = url || 'https://work.weixin.qq.com';
 
   for (const webhook of WEBHOOKS) {
@@ -80,7 +111,6 @@ async function sendNews(title, description, url = '', picurl = '') {
         description,
         url: articleUrl,
       };
-      // picurl 为空时不传，避免报错
       if (picurl) {
         article.picurl = picurl;
       }
@@ -105,4 +135,4 @@ async function sendNews(title, description, url = '', picurl = '') {
   }
 }
 
-module.exports = { sendMarkdown, sendNews };
+module.exports = { sendText, sendMarkdown, sendNews };
