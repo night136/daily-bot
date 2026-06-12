@@ -3,13 +3,25 @@
  * 通过群机器人 Webhook 发送消息到企业微信群
  *
  * 需要的环境变量（在 GitHub Secrets 中设置）：
- * - WECOM_WEBHOOK: 群机器人 Webhook 地址（群1）
- * - WECOM_WEBHOOK_2: 群机器人 Webhook 地址（群2）
+ * - WECOM_WEBHOOKS: 逗号分隔的 Webhook 地址列表
+ *   例如: "https://qyapi.weixin.qq.com/xxx?key=aaa,https://qyapi.weixin.qq.com/xxx?key=bbb"
+ *
+ * 兼容旧配置：
+ * - WECOM_WEBHOOK: 单个 Webhook 地址（群1）
+ * - WECOM_WEBHOOK_2: 单个 Webhook 地址（群2）
  */
 
 const axios = require('axios');
 
-const WEBHOOKS = [process.env.WECOM_WEBHOOK, process.env.WECOM_WEBHOOK_2].filter(Boolean);
+// 优先使用 WECOM_WEBHOOKS（逗号分隔），兼容旧的 WECOM_WEBHOOK / WECOM_WEBHOOK_2
+const WEBHOOKS = [
+  ...(process.env.WECOM_WEBHOOKS || '')
+    .split(',')
+    .map(s => s.trim())
+    .filter(Boolean),
+  process.env.WECOM_WEBHOOK,
+  process.env.WECOM_WEBHOOK_2,
+].filter(Boolean);
 
 /**
  * 发送 markdown 消息到企业微信群

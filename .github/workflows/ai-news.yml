@@ -26,4 +26,5 @@ jobs:
           FEISHU_USER_ID: ${{ secrets.FEISHU_USER_ID }}
           FEISHU_CHAT_ID: ${{ secrets.FEISHU_CHAT_ID }}
           WECOM_WEBHOOK: ${{ secrets.WECOM_WEBHOOK }}
+          WECOM_WEBHOOKS: ${{ secrets.WECOM_WEBHOOKS }}
         run: npm run ai-news
