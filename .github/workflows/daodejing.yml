@@ -2,7 +2,7 @@ name: 每日道德经
 
 on:
   schedule:
-    - cron: '0 4 * * *'  # UTC 4:00 = 北京时间 12:00
+    - cron: '0 23 * * *'  # UTC 23:00 = 北京时间 7:00（提前5小时补偿schedule延迟，实际约12:00执行）
   workflow_dispatch:
 
 jobs:

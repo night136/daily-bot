@@ -2,7 +2,7 @@ name: 每日英语单词
 
 on:
   schedule:
-    - cron: '30 0 * * *'  # UTC 0:30 = 北京时间 8:30
+    - cron: '30 19 * * *'  # UTC 19:30 = 北京时间 3:30（提前5小时补偿schedule延迟，实际约8:30执行）
   workflow_dispatch:  # 支持手动触发
 
 jobs:

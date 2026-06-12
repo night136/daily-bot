@@ -9,8 +9,9 @@ const { sendMarkdown: sendWecom } = require('./send_wecom');
 const chapters = require('../data/daodejing.json');
 
 async function main() {
-  const now = new Date();
-  const start = new Date(now.getFullYear(), 0, 0);
+  // 使用北京时间 (UTC+8)
+  const now = new Date(Date.now() + 8 * 60 * 60 * 1000);
+  const start = new Date(now.getUTCFullYear(), 0, 0);
   const dayOfYear = Math.floor((now - start) / (1000 * 60 * 60 * 24));
 
   // 81章每两天推一对，41天一个循环。第41天只推第81章
@@ -53,13 +54,13 @@ async function main() {
   ].join('\n');
 
   const chLabel = ch2 ? `第${ch1.chapter}-${ch2.chapter}章` : `第${ch1.chapter}章`;
-  const title = `📜 每日道德经 | ${now.getMonth()+1}月${now.getDate()}日 · ${chLabel}`;
+  const title = `📜 每日道德经 | ${now.getUTCMonth()+1}月${now.getUTCDate()}日 · ${chLabel}`;
   await sendMarkdown(title, body);
   console.log(`道德经第${ch1.chapter}-${ch2.chapter}章推送完成`);
 
   // 企微版：精简格式，每章只发原文+解读（不含感悟），以避免超长
   const wecomBody = [
-    `📜 每日道德经 | ${now.getMonth()+1}月${now.getDate()}日 · ${chLabel}`,
+    `📜 每日道德经 | ${now.getUTCMonth()+1}月${now.getUTCDate()}日 · ${chLabel}`,
     ``,
     `**第${ch1.chapter}章 · ${ch1.title}**`,
     ``,

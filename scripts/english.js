@@ -17,8 +17,9 @@ function shuffle(arr) {
 }
 
 async function main() {
-  const today = new Date();
-  const dateStr = `${today.getFullYear()}年${today.getMonth() + 1}月${today.getDate()}日`;
+  // 使用北京时间 (UTC+8)
+  const today = new Date(Date.now() + 8 * 60 * 60 * 1000);
+  const dateStr = `${today.getUTCFullYear()}年${today.getUTCMonth() + 1}月${today.getUTCDate()}日`;
 
   const picked = shuffle(words).slice(0, 5);
 

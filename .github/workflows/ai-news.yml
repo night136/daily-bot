@@ -2,7 +2,7 @@ name: 每日AI新闻
 
 on:
   schedule:
-    - cron: '0 1 * * *'  # UTC 1:00 = 北京时间 9:00
+    - cron: '0 20 * * *'  # UTC 20:00 = 北京时间 4:00（提前5小时补偿schedule延迟，实际约9:00执行）
   workflow_dispatch:
 
 jobs:
