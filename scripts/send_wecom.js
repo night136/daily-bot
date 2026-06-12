@@ -70,19 +70,25 @@ async function sendNews(title, description, url = '', picurl = '') {
     return;
   }
 
+  // 企业微信 news 类型 url 不能为空，未提供时用占位链接
+  const articleUrl = url || 'https://work.weixin.qq.com';
+
   for (const webhook of WEBHOOKS) {
     try {
+      const article = {
+        title,
+        description,
+        url: articleUrl,
+      };
+      // picurl 为空时不传，避免报错
+      if (picurl) {
+        article.picurl = picurl;
+      }
+
       const resp = await axios.post(webhook, {
         msgtype: 'news',
         news: {
-          articles: [
-            {
-              title,
-              description,
-              url,
-              picurl,
-            },
-          ],
+          articles: [article],
         },
       }, {
         headers: { 'Content-Type': 'application/json' },
