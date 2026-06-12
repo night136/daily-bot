@@ -5,7 +5,7 @@
  */
 
 const { sendMarkdown } = require('./send_feishu');
-const { sendMarkdown: sendWecom } = require('./send_wecom');
+const { sendNews: sendWecom } = require('./send_wecom');
 const chapters = require('../data/daodejing.json');
 
 async function main() {
@@ -58,27 +58,35 @@ async function main() {
   await sendMarkdown(title, body);
   console.log(`道德经第${ch1.chapter}-${ch2.chapter}章推送完成`);
 
-  // 企微版：精简格式，每章只发原文+解读（不含感悟），以避免超长
-  const wecomBody = [
-    `📜 每日道德经 | ${now.getUTCMonth()+1}月${now.getUTCDate()}日 · ${chLabel}`,
+  // 企微版：图文卡片，内容与飞书一致（含感悟）
+  const wecomDesc = [
+    `📜 第${ch1.chapter}章 · ${ch1.title}`,
     ``,
-    `**第${ch1.chapter}章 · ${ch1.title}**`,
-    ``,
+    `【原文】`,
     ch1.content,
     ``,
-    `> ${ch1.interpretation.replace(/\n/g, '\n> ')}`,
+    `【解读】`,
+    ch1.interpretation,
+    ``,
+    `💭 【感悟提示】`,
+    ch1.reflection,
     ...(ch2 ? [
       ``,
-      `**第${ch2.chapter}章 · ${ch2.title}**`,
+      `📜 第${ch2.chapter}章 · ${ch2.title}`,
       ``,
+      `【原文】`,
       ch2.content,
       ``,
-      `> ${ch2.interpretation.replace(/\n/g, '\n> ')}`,
+      `【解读】`,
+      ch2.interpretation,
+      ``,
+      `💭 【感悟提示】`,
+      ch2.reflection,
     ] : []),
     ``,
     `📌 明日预告：${preview}`,
   ].join('\n');
-  await sendWecom(wecomBody);
+  await sendWecom(title, wecomDesc);
 }
 
 main().catch(err => { console.error(err); process.exit(1); });

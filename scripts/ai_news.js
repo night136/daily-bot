@@ -6,7 +6,7 @@
 
 const axios = require('axios');
 const { sendMarkdown } = require('./send_feishu');
-const { sendMarkdown: sendWecom } = require('./send_wecom');
+const { sendNews: sendWecom } = require('./send_wecom');
 
 /**
  * 通过 GitHub 搜索 API 获取 AI 相关 trending 内容
@@ -22,6 +22,8 @@ async function fetchGitHubTrending() {
     return (resp.data.items || []).map((item) => ({
       source: 'GitHub Trending',
       text: `**${item.full_name}** ⭐${item.stargazers_count}\n${item.description || '无描述'}\n[查看](${item.html_url})`,
+      plainText: `${item.full_name} ⭐${item.stargazers_count}\n${item.description || '无描述'}`,
+      url: item.html_url,
     }));
   } catch {
     return [];
@@ -59,6 +61,8 @@ async function fetchHackerNews() {
     return aiItems.map((item) => ({
       source: 'Hacker News',
       text: `**${item.title}** 🔥${item.score || 0}\n[查看](https://news.ycombinator.com/item?id=${item.id})`,
+      plainText: `${item.title} 🔥${item.score || 0}`,
+      url: `https://news.ycombinator.com/item?id=${item.id}`,
     }));
   } catch {
     return [];
@@ -84,12 +88,19 @@ async function main() {
     return `${i + 1}. [${n.source}] ${n.text}`;
   });
 
+  // 企微图文卡片：用第一条新闻的链接作为卡片跳转
+  const plainLines = picked.map((n, i) => {
+    return `${i + 1}. [${n.source}] ${n.plainText}`;
+  });
+  const wecomDesc = plainLines.join('\n\n');
+  const wecomUrl = picked[0].url || '';
+
   const content = `${lines.join('\n\n')}`;
   const title = `📰 每日 AI 新闻推送 | ${dateStr}`;
 
   console.log(`推送 ${picked.length} 条新闻`);
   await sendMarkdown(title, content);
-  await sendWecom(`# 📰 每日 AI 新闻推送 | ${dateStr}\n${content}`);
+  await sendWecom(title, wecomDesc, wecomUrl);
   console.log('推送成功！');
 }
 

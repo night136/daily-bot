@@ -4,7 +4,7 @@
  */
 
 const { sendMarkdown } = require('./send_feishu');
-const { sendMarkdown: sendWecom } = require('./send_wecom');
+const { sendNews: sendWecom } = require('./send_wecom');
 const words = require('../data/words.json');
 
 function shuffle(arr) {
@@ -30,9 +30,15 @@ async function main() {
   const content = `${lines.join('\n\n')}`;
   const title = `📝 每日 5 个英语单词 | ${dateStr}`;
 
+  // 企微图文卡片：去掉 markdown 格式符，纯文本
+  const plainLines = picked.map((w, i) => {
+    return `${i + 1}. ${w.word} (${w.pos}) — ${w.cn}\n   例: ${w.example}`;
+  });
+  const wecomDesc = plainLines.join('\n\n');
+
   console.log(`推送英语单词: ${dateStr}`);
   await sendMarkdown(title, content);
-  await sendWecom(`# 📝 每日 5 个英语单词 | ${dateStr}\n${content}`);
+  await sendWecom(title, wecomDesc);
   console.log('推送成功！');
 }
 

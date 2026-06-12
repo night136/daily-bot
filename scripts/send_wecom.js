@@ -2,6 +2,10 @@
  * 企业微信消息发送模块
  * 通过群机器人 Webhook 发送消息到企业微信群
  *
+ * 支持的消息类型：
+ * - news 图文卡片（推荐，美观）
+ * - markdown 文本（兼容旧调用）
+ *
  * 需要的环境变量（在 GitHub Secrets 中设置）：
  * - WECOM_WEBHOOKS: 逗号分隔的 Webhook 地址列表
  *   例如: "https://qyapi.weixin.qq.com/xxx?key=aaa,https://qyapi.weixin.qq.com/xxx?key=bbb"
@@ -24,7 +28,7 @@ const WEBHOOKS = [
 ].filter(Boolean);
 
 /**
- * 发送 markdown 消息到企业微信群
+ * 发送 markdown 消息到企业微信群（兼容旧调用）
  * @param {string} content - markdown 内容
  */
 async function sendMarkdown(content) {
@@ -43,14 +47,56 @@ async function sendMarkdown(content) {
       });
 
       if (resp.data.errcode !== 0) {
-        console.error(`[企微] 发送失败: ${JSON.stringify(resp.data)}`);
+        console.error(`[企微] markdown发送失败: ${JSON.stringify(resp.data)}`);
       } else {
-        console.log(`[企微] 消息发送成功 (webhook=${webhook.slice(0, 50)}...)`);
+        console.log(`[企微] markdown消息发送成功 (webhook=${webhook.slice(0, 50)}...)`);
       }
     } catch (err) {
-      console.error(`[企微] 发送异常: ${err.message}`);
+      console.error(`[企微] markdown发送异常: ${err.message}`);
     }
   }
 }
 
-module.exports = { sendMarkdown };
+/**
+ * 发送图文卡片消息到企业微信群（推荐，美观）
+ * @param {string} title - 卡片标题
+ * @param {string} description - 卡片描述内容（支持换行）
+ * @param {string} [url=''] - 点击跳转链接
+ * @param {string} [picurl=''] - 封面图片URL
+ */
+async function sendNews(title, description, url = '', picurl = '') {
+  if (WEBHOOKS.length === 0) {
+    console.log("[企微] 未配置任何 WECOM_WEBHOOK，跳过");
+    return;
+  }
+
+  for (const webhook of WEBHOOKS) {
+    try {
+      const resp = await axios.post(webhook, {
+        msgtype: 'news',
+        news: {
+          articles: [
+            {
+              title,
+              description,
+              url,
+              picurl,
+            },
+          ],
+        },
+      }, {
+        headers: { 'Content-Type': 'application/json' },
+      });
+
+      if (resp.data.errcode !== 0) {
+        console.error(`[企微] news发送失败: ${JSON.stringify(resp.data)}`);
+      } else {
+        console.log(`[企微] 图文卡片发送成功 (webhook=${webhook.slice(0, 50)}...)`);
+      }
+    } catch (err) {
+      console.error(`[企微] news发送异常: ${err.message}`);
+    }
+  }
+}
+
+module.exports = { sendMarkdown, sendNews };
