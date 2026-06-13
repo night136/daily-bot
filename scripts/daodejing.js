@@ -56,7 +56,7 @@ async function main() {
   const chLabel = ch2 ? `第${ch1.chapter}-${ch2.chapter}章` : `第${ch1.chapter}章`;
   const title = `📜 每日道德经 | ${now.getUTCMonth()+1}月${now.getUTCDate()}日 · ${chLabel}`;
   await sendMarkdown(title, body);
-  console.log(`道德经第${ch1.chapter}-${ch2.chapter}章推送完成`);
+  console.log(`道德经第${ch1.chapter}${ch2 ? '-' + ch2.chapter : ''}章推送完成`);
 
   // 企微版：text文本，内容与飞书一致（含感悟），不截断
   const wecomText = [
