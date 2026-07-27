@@ -2,7 +2,7 @@ name: 每日易经
 
 on:
   schedule:
-    - cron: '0 18 * * *'  # UTC 18:00 = 北京时间 2:00 + ~5h延迟 ≈ 早上 7:00 执行
+    - cron: '0 21 * * *'  # UTC 21:00 = 北京时间 5:00 + ~5h延迟 ≈ 上午 10:00 执行
   workflow_dispatch:
 
 jobs:
